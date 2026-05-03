@@ -6,7 +6,7 @@
 
 Live demo of an LLM-based narrative frame classifier applied to the Saudi-UAE information war that erupted on December 30, 2025.
 
-**[→ Open the classifier](https://[your-handle].github.io/vinesight-classifier)**
+**[→ Open the classifier](https://jomamane.github.io/vinesight-classifier)**
 
 ---
 
@@ -31,7 +31,7 @@ Classifies Arabic and English social media posts by narrative frame using semant
 
 ## Usage
 
-1. Open the [live demo](https://[your-handle].github.io/vinesight-classifier)
+1. Open the [live demo](https://jomamane.github.io/vinesight-classifier)
 2. Enter your Anthropic API key (get one at [console.anthropic.com](https://console.anthropic.com))
 3. Click **RUN ALL POSTS** or classify individual posts
 4. Use the custom input to classify any Arabic or English post
