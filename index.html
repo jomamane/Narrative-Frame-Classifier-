@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Narrative Frame Classifier — Vinesight Home Assignment</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Mono',monospace;background:#0a0a0a;color:#e0e0e0;padding:28px 22px;min-height:100vh}
+.eyebrow{font-size:9px;color:#333;letter-spacing:.18em;margin-bottom:6px}
+h1{font-size:18px;font-weight:600;letter-spacing:.02em;margin-bottom:4px}
+.sub{font-size:11px;color:#555;font-family:'IBM Plex Sans',sans-serif}
+.meta{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;font-size:10px;color:#444}
+
+/* API KEY BANNER */
+.key-banner{background:#111;border:1px solid #2a2a2a;border-radius:3px;padding:14px 16px;margin:22px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.key-banner label{font-size:10px;color:#555;letter-spacing:.1em;white-space:nowrap}
+.key-input{flex:1;min-width:220px;background:#0d0d0d;border:1px solid #333;color:#ddd;padding:7px 10px;border-radius:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
+.key-input:focus{border-color:#555}
+.key-status{font-size:10px;white-space:nowrap}
+.key-note{font-size:10px;color:#3a3a3a;font-family:'IBM Plex Sans',sans-serif;width:100%;margin-top:2px}
+
+.legend{margin:20px 0 18px}
+.lbl{font-size:9px;color:#333;letter-spacing:.12em;display:block;margin-bottom:5px}
+.tag{font-size:10px;font-weight:600;letter-spacing:.07em;padding:2px 7px;border-radius:2px;display:inline-block}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+
+.controls{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.btn-main{background:#ddd;color:#0a0a0a;border:none;padding:8px 20px;border-radius:2px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;transition:all .15s}
+.btn-main:hover:not(:disabled){background:#fff}
+.btn-main:disabled{opacity:.4;cursor:not-allowed}
+
+.card{background:#111;border:1px solid #222;border-left-width:3px;border-left-color:#1e1e1e;border-radius:3px;margin-bottom:9px;overflow:hidden}
+.card-head{padding:9px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #1a1a1a;flex-wrap:wrap}
+.pid{font-size:10px;color:#444;min-width:32px}
+.ltag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:2px;background:#1a1a1a;color:#666}
+.btn-c{background:#1a1a1a;border:1px solid #2e2e2e;color:#777;padding:4px 10px;border-radius:2px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.05em;transition:all .15s;margin-left:auto}
+.btn-c:hover:not(:disabled){border-color:#555;color:#ddd;background:#222}
+.btn-c:disabled{opacity:.35;cursor:not-allowed}
+.card-body{padding:11px 13px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.65;color:#bbb}
+.post-src{font-size:10px;color:#3a3a3a;margin-top:5px;font-family:'IBM Plex Mono',monospace}
+.res{padding:11px 13px;background:#0d0d0d;border-top:1px solid #1a1a1a}
+.conf-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-bg{background:#1e1e1e;height:3px;border-radius:2px;flex:1}
+.bar{height:3px;border-radius:2px;transition:width .6s}
+.sig{display:inline-block;background:#1a1a1a;border:1px solid #252525;border-radius:2px;padding:2px 5px;font-size:10px;margin:2px 2px 2px 0;color:#888;font-family:'IBM Plex Mono',monospace}
+.reasoning{font-size:12px;color:#888;font-family:'IBM Plex Sans',sans-serif;line-height:1.55}
+.err{color:#c0392b;font-size:10px}
+
+.spin{display:inline-block;width:10px;height:10px;border:1.5px solid #333;border-top-color:#888;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+hr{border:none;border-top:1px solid #1a1a1a;margin:24px 0}
+textarea{width:100%;background:#0d0d0d;border:1px solid #222;color:#ddd;padding:9px 11px;border-radius:3px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;resize:vertical;min-height:70px;outline:none;transition:border-color .2s}
+textarea:focus{border-color:#3a3a3a}
+.btn-sm{background:#1a1a1a;border:1px solid #2e2e2e;color:#777;padding:6px 14px;border-radius:2px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;margin-top:9px;transition:all .15s}
+.btn-sm:hover:not(:disabled){border-color:#555;color:#ddd}
+.btn-sm:disabled{opacity:.35;cursor:not-allowed}
+.custom-res{margin-top:12px;background:#111;border-radius:3px;padding:14px;border-width:1px;border-style:solid}
+.footer{margin-top:36px;padding-top:14px;border-top:1px solid #131313;font-size:9px;color:#252525;letter-spacing:.1em}
+</style>
+</head>
+<body>
+
+<div class="eyebrow">APPENDIX A — LIVE DEMONSTRATION</div>
+<h1>Narrative Frame Classifier</h1>
+<div class="sub">Saudi-UAE Information Operation · Dec 30 2025–Feb 2026 · LLM semantic classification</div>
+<div class="meta">
+  <span>MODEL claude-sonnet-4-6</span>
+  <span>CORPUS 8 posts</span>
+  <span>LANGUAGES AR / EN</span>
+  <span id="cmeta" style="color:#444">CLASSIFIED 0/8</span>
+</div>
+
+<div class="key-banner">
+  <label>ANTHROPIC API KEY</label>
+  <input class="key-input" type="password" id="api-key" placeholder="sk-ant-..." oninput="updateKeyStatus()">
+  <span class="key-status" id="key-status" style="color:#444">○ not set</span>
+  <span class="key-note">Your key is never stored or transmitted anywhere except directly to api.anthropic.com. Get one at console.anthropic.com</span>
+</div>
+
+<div class="legend">
+  <span class="lbl">FRAME TAXONOMY</span>
+  <div class="tags" id="legend-tags"></div>
+</div>
+
+<div class="controls">
+  <button class="btn-main" id="run-all" onclick="runAll()">▶ RUN ALL POSTS</button>
+  <span style="font-size:10px;color:#2ecc71;display:none" id="ccount"></span>
+</div>
+
+<div id="posts"></div>
+
+<hr>
+
+<span class="lbl" style="font-size:9px;letter-spacing:.15em">CLASSIFY CUSTOM POST (Arabic or English)</span>
+<textarea id="custom-input" placeholder="Paste any Arabic or English post here..."></textarea>
+<button class="btn-sm" id="cbtn" onclick="classifyCustom()">CLASSIFY →</button>
+<div id="custom-res"></div>
+
+<div class="footer">JOHANNA MAMANE · VINESIGHT HOME ASSIGNMENT · MAY 2026 · APPENDIX A — github.com/[your-handle]/vinesight-classifier</div>
+
+<script>
+const FRAMES={
+  F1:{label:"Zionist Proxy",color:"#c0392b",bg:"#2a1010"},
+  F2:{label:"Regional Destabilizer",color:"#e67e22",bg:"#2a1a08"},
+  F3:{label:"Accords Betrayal",color:"#9b59b6",bg:"#1e1228"},
+  F4:{label:"Sovereignty Defense",color:"#3498db",bg:"#0e1e2e"},
+  F5:{label:"Sacrifice Narrative",color:"#2ecc71",bg:"#0e2018"},
+  F6:{label:"Boycott Mobilization",color:"#f1c40f",bg:"#22200a"},
+  F7:{label:"Neutral Reporting",color:"#95a5a6",bg:"#1a1a1a"},
+  F8:{label:"Other",color:"#7f8c8d",bg:"#1a1a1a"}
+};
+const AC={PRO_SAUDI:"#c0392b",PRO_UAE:"#3498db",NEUTRAL:"#95a5a6",AMBIGUOUS:"#888"};
+const POSTS=[
+  {id:"P001",lang:"AR",src:"Al-Jazirah (Saudi), Jan 22 2026",text:"الإمارات ألقت بنفسها في أحضان الصهيونية وقبلت أن تكون حصان طروادة الإسرائيلي في العالم العربي، خيانة لله ولرسوله وللأمة بأسرها."},
+  {id:"P002",lang:"AR",src:"Pro-UAE X account, Jan 2026",text:"المملكة العربية السعودية تعاني من عقدة الأخ الأكبر. الإمارات دولة ذات سيادة مستقلة، لها قراراتها الخاصة، ولا تقبل الوصاية من أحد."},
+  {id:"P003",lang:"EN",src:"#BoycottUAETourism, X/Twitter, Jan 2026",text:"Every dirham you spend in Dubai funds UAE support for RSF militias committing genocide in Sudan. Don't visit Abu Dhabi. Don't fly Emirates. #BoycottUAETourism — this is a national and moral duty."},
+  {id:"P004",lang:"AR",src:"Al-Ekhbariya (Saudi state), Jan 2026",text:"الإمارات تستثمر في الفوضى وتدعم الانفصاليين في اليمن والسودان وليبيا والقرن الأفريقي. هذا نمط ممنهج يهدف إلى تفتيت الدول العربية."},
+  {id:"P005",lang:"EN",src:"Emirati commentator, X/Twitter, Jan 2026",text:"The UAE made enormous sacrifices in Yemen — our soldiers died fighting terrorism alongside Saudi Arabia. Now Riyadh calls us destabilizers. This is not how you treat a brother who bled for you."},
+  {id:"P006",lang:"AR",src:"Saudi-aligned account, X/Twitter, Jan 2026",text:"اتفاقيات إبراهيم ليست سلاماً سياسياً، بل هي استسلام ديني وتاريخي. الإمارات قبلت بالسردية اليهودية على حساب الهوية الإسلامية والعربية."},
+  {id:"P007",lang:"EN",src:"Reuters factual report, Dec 30 2025",text:"Saudi Arabia struck what it described as a UAE weapons shipment at the port of Mukalla, accusing Abu Dhabi of supporting STC forces near its border. The UAE denied the allegations."},
+  {id:"P008",lang:"AR",src:"Sudan-based account, Jan 2026",text:"شاركوا الهاشتاق وأيضاً قاطعوا منتجات الإمارات. أبوظبي تمول قوات الدعم السريع التي ترتكب المجازر في السودان. #قاطعوا_السياحة_في_الإمارات"}
+];
+const SYS=`You are an expert analyst in influence operations and narrative intelligence in Gulf region Arabic/English political discourse.
+Classify the post according to narrative frames from the Saudi-UAE information war (December 30, 2025).
+F1 ZIONIST_PROXY — UAE as Israel's Trojan horse. Arabic: حصان طروادة الإسرائيلي، خيانة الأمة
+F2 REGIONAL_DESTABILIZER — UAE fragmenting Arab states (Sudan/RSF, Yemen/STC, Libya). Arabic: الفوضى، الانفصاليين، تفتيت الدول
+F3 ACCORDS_BETRAYAL — Abraham Accords as religious/civilizational capitulation. Arabic: اتفاقيات إبراهيم، التطبيع، الهوية الإسلامية
+F4 SOVEREIGNTY_DEFENSE — UAE independence vs Saudi hegemony. Arabic: السيادة، عقدة الأخ الأكبر
+F5 SACRIFICE_NARRATIVE — UAE military/financial contributions; Saudi ingratitude.
+F6 BOYCOTT_MOBILIZATION — Calls to boycott UAE. Hashtags: #BoycottUAETourism #قاطعوا_السياحة_في_الإمارات
+F7 NEUTRAL_REPORTING — Factual, no campaign alignment.
+F8 OTHER — Doesn't fit.
+Respond ONLY with valid JSON:
+{"primary_frame":"F1-F8","frame_label":"label","confidence":0.0-1.0,"alignment":"PRO_SAUDI|PRO_UAE|NEUTRAL|AMBIGUOUS","key_signals":["s1","s2","s3"],"reasoning":"1-2 sentences"}`;
+
+const results={};let cnt=0,busy=false;
+
+function updateKeyStatus(){
+  const k=document.getElementById('api-key').value.trim();
+  const s=document.getElementById('key-status');
+  if(k.startsWith('sk-ant-')&&k.length>20){s.textContent='● ready';s.style.color='#2ecc71';}
+  else if(k.length>0){s.textContent='○ invalid format';s.style.color='#e67e22';}
+  else{s.textContent='○ not set';s.style.color='#444';}
+}
+
+function getKey(){return document.getElementById('api-key').value.trim();}
+
+// Build legend
+const lt=document.getElementById('legend-tags');
+Object.entries(FRAMES).forEach(([c,f])=>{const s=document.createElement('span');s.className='tag';s.style.cssText=`background:${f.bg};color:${f.color}`;s.textContent=`${c} ${f.label}`;lt.appendChild(s);});
+
+// Build post cards
+const pc=document.getElementById('posts');
+POSTS.forEach(p=>{
+  const d=document.createElement('div');d.className='card';d.id=`card-${p.id}`;
+  d.innerHTML=`
+    <div class="card-head">
+      <span class="pid">${p.id}</span>
+      <span class="ltag">${p.lang}</span>
+      <span id="ft-${p.id}"></span>
+      <span id="at-${p.id}"></span>
+      <button class="btn-c" id="b-${p.id}" onclick="classifyPost('${p.id}')">CLASSIFY</button>
+    </div>
+    <div class="card-body">
+      <div style="direction:${p.lang==='AR'?'rtl':'ltr'}">${p.text}</div>
+      <div class="post-src">SOURCE: ${p.src}</div>
+    </div>
+    <div id="r-${p.id}"></div>`;
+  pc.appendChild(d);
+});
+
+async function callAPI(text,id){
+  const key=getKey();
+  if(!key||!key.startsWith('sk-ant-'))throw new Error('API key not set — enter your Anthropic key above');
+  const r=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:500,system:SYS,messages:[{role:"user",content:`Post ID: ${id}\nText: ${text}`}]})
+  });
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message);
+  let raw=d.content?.find(b=>b.type==="text")?.text?.trim()||"";
+  if(raw.startsWith("```"))raw=raw.split("```")[1].replace(/^json/,"").trim();
+  return JSON.parse(raw);
+}
+
+function renderResult(id,res){
+  const f=FRAMES[res.primary_frame]||FRAMES.F8;
+  document.getElementById(`card-${id}`).style.borderLeftColor=f.color;
+  const ft=document.getElementById(`ft-${id}`);
+  ft.className='tag';ft.style.cssText=`background:${f.bg};color:${f.color}`;ft.textContent=`${res.primary_frame} · ${res.frame_label}`;
+  const at=document.getElementById(`at-${id}`);
+  at.style.cssText=`font-size:10px;letter-spacing:.06em;color:${AC[res.alignment]||'#888'}`;at.textContent=res.alignment;
+  const pct=(res.confidence*100).toFixed(0);
+  const sigs=(res.key_signals||[]).map(s=>`<span class="sig">${s}</span>`).join('');
+  document.getElementById(`r-${id}`).innerHTML=`
+    <div class="res">
+      <div class="conf-row">
+        <span style="font-size:9px;color:#333;letter-spacing:.1em">CONFIDENCE</span>
+        <span style="font-size:11px;font-weight:600;color:${f.color}">${pct}%</span>
+        <div class="bar-bg"><div class="bar" style="width:${pct}%;background:${f.color}"></div></div>
+      </div>
+      <div style="margin-bottom:7px"><span class="lbl">KEY SIGNALS</span>${sigs}</div>
+      <div><span class="lbl">REASONING</span><span class="reasoning">${res.reasoning}</span></div>
+    </div>`;
+}
+
+function updateMeta(){
+  document.getElementById('cmeta').textContent=`CLASSIFIED ${cnt}/8`;
+  document.getElementById('cmeta').style.color=cnt>0?'#2ecc71':'#444';
+  const cc=document.getElementById('ccount');cc.textContent=`${cnt} classified`;cc.style.display='inline';
+}
+
+async function classifyPost(id){
+  const post=POSTS.find(p=>p.id===id);
+  const btn=document.getElementById(`b-${id}`);
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
+  try{
+    const res=await callAPI(post.text,id);
+    results[id]=res;renderResult(id,res);
+    if(!results[id+'_c']){cnt++;results[id+'_c']=true;}
+    updateMeta();
+  }catch(e){
+    document.getElementById(`r-${id}`).innerHTML=`<div class="res"><span class="err">ERROR: ${e.message}</span></div>`;
+  }
+  btn.disabled=false;btn.textContent='RE-RUN';
+}
+
+async function runAll(){
+  if(busy)return;
+  if(!getKey()||!getKey().startsWith('sk-ant-')){
+    document.getElementById('api-key').focus();
+    document.getElementById('key-status').textContent='← enter your API key first';
+    document.getElementById('key-status').style.color='#e67e22';
+    return;
+  }
+  busy=true;cnt=0;
+  Object.keys(results).forEach(k=>delete results[k]);
+  const btn=document.getElementById('run-all');btn.disabled=true;btn.textContent='CLASSIFYING...';
+  for(const p of POSTS)await classifyPost(p.id);
+  btn.disabled=false;btn.textContent='▶ RUN ALL POSTS';busy=false;
+}
+
+async function classifyCustom(){
+  const txt=document.getElementById('custom-input').value.trim();if(!txt)return;
+  const btn=document.getElementById('cbtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span> CLASSIFYING';
+  document.getElementById('custom-res').innerHTML='';
+  try{
+    const res=await callAPI(txt,'CUSTOM');
+    const f=FRAMES[res.primary_frame]||FRAMES.F8;
+    const pct=(res.confidence*100).toFixed(0);
+    const sigs=(res.key_signals||[]).map(s=>`<span class="sig">${s}</span>`).join('');
+    document.getElementById('custom-res').innerHTML=`
+      <div class="custom-res" style="border-color:${f.color}">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:9px">
+          <span class="tag" style="background:${f.bg};color:${f.color}">${res.primary_frame} · ${res.frame_label}</span>
+          <span style="font-size:10px;color:${AC[res.alignment]||'#888'}">${res.alignment}</span>
+          <span style="font-size:10px;color:#444;margin-left:auto">CONF <strong style="color:${f.color}">${pct}%</strong></span>
+        </div>
+        <div style="margin-bottom:7px">${sigs}</div>
+        <div class="reasoning">${res.reasoning}</div>
+      </div>`;
+  }catch(e){
+    document.getElementById('custom-res').innerHTML=`<div style="color:#c0392b;font-size:10px;margin-top:8px">ERROR: ${e.message}</div>`;
+  }
+  btn.disabled=false;btn.textContent='CLASSIFY →';
+}
+</script>
+</body>
+</html>
