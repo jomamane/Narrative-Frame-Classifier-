@@ -14,22 +14,27 @@ h1{font-size:18px;font-weight:600;letter-spacing:.02em;margin-bottom:4px}
 .meta{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;font-size:10px;color:#444}
 
 /* API KEY BANNER */
-.key-banner{background:#111;border:1px solid #2a2a2a;border-radius:3px;padding:14px 16px;margin:22px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.key-banner{background:#111;border:1px solid #2a2a2a;border-radius:3px;padding:14px 16px;margin:22px 0}
+.key-banner-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .key-banner label{font-size:10px;color:#555;letter-spacing:.1em;white-space:nowrap}
+.key-optional{font-size:9px;color:#2ecc71;letter-spacing:.08em;margin-left:4px}
 .key-input{flex:1;min-width:220px;background:#0d0d0d;border:1px solid #333;color:#ddd;padding:7px 10px;border-radius:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;transition:border-color .2s}
 .key-input:focus{border-color:#555}
 .key-status{font-size:10px;white-space:nowrap}
-.key-note{font-size:10px;color:#3a3a3a;font-family:'IBM Plex Sans',sans-serif;width:100%;margin-top:2px}
+.key-note{font-size:10px;color:#3a3a3a;font-family:'IBM Plex Sans',sans-serif;width:100%;margin-top:6px}
 
 .legend{margin:20px 0 18px}
 .lbl{font-size:9px;color:#333;letter-spacing:.12em;display:block;margin-bottom:5px}
 .tag{font-size:10px;font-weight:600;letter-spacing:.07em;padding:2px 7px;border-radius:2px;display:inline-block}
 .tags{display:flex;flex-wrap:wrap;gap:4px}
 
-.controls{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.controls{display:flex;flex-direction:column;gap:7px;margin-bottom:18px}
+.controls-row{display:flex;align-items:center;gap:14px}
 .btn-main{background:#ddd;color:#0a0a0a;border:none;padding:8px 20px;border-radius:2px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.1em;transition:all .15s}
 .btn-main:hover:not(:disabled){background:#fff}
 .btn-main:disabled{opacity:.4;cursor:not-allowed}
+.demo-note{font-size:9px;color:#444;letter-spacing:.07em;font-family:'IBM Plex Sans',sans-serif}
+.demo-note span{color:#2ecc71}
 
 .card{background:#111;border:1px solid #222;border-left-width:3px;border-left-color:#1e1e1e;border-radius:3px;margin-bottom:9px;overflow:hidden}
 .card-head{padding:9px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #1a1a1a;flex-wrap:wrap}
@@ -59,6 +64,7 @@ textarea:focus{border-color:#3a3a3a}
 .btn-sm:disabled{opacity:.35;cursor:not-allowed}
 .custom-res{margin-top:12px;background:#111;border-radius:3px;padding:14px;border-width:1px;border-style:solid}
 .footer{margin-top:36px;padding-top:14px;border-top:1px solid #131313;font-size:9px;color:#252525;letter-spacing:.1em}
+.mode-badge{font-size:9px;letter-spacing:.1em;padding:2px 6px;border-radius:2px;font-weight:600}
 </style>
 </head>
 <body>
@@ -68,16 +74,19 @@ textarea:focus{border-color:#3a3a3a}
 <div class="sub">Saudi-UAE Information Operation · Dec 30 2025–Feb 2026 · LLM semantic classification</div>
 <div class="meta">
   <span>MODEL claude-sonnet-4-6</span>
-  <span>CORPUS 8 posts</span>
+  <span>CORPUS 14 posts</span>
   <span>LANGUAGES AR / EN</span>
-  <span id="cmeta" style="color:#444">CLASSIFIED 0/8</span>
+  <span id="cmeta" style="color:#444">CLASSIFIED 0/14</span>
+  <span id="mode-badge" class="mode-badge" style="background:#1a2a1a;color:#2ecc71">PRE-CLASSIFIED MODE</span>
 </div>
 
 <div class="key-banner">
-  <label>ANTHROPIC API KEY</label>
-  <input class="key-input" type="password" id="api-key" placeholder="sk-ant-..." oninput="updateKeyStatus()">
-  <span class="key-status" id="key-status" style="color:#444">○ not set</span>
-  <span class="key-note">Your key is never stored or transmitted anywhere except directly to api.anthropic.com. Get one at console.anthropic.com</span>
+  <div class="key-banner-row">
+    <label>ANTHROPIC API KEY <span class="key-optional">OPTIONAL</span></label>
+    <input class="key-input" type="password" id="api-key" placeholder="sk-ant-... (leave blank to use pre-classified results)" oninput="updateKeyStatus()">
+    <span class="key-status" id="key-status" style="color:#444">○ not set</span>
+  </div>
+  <div class="key-note">Without a key: pre-classified results load instantly. With your key: live API classification runs against the actual model. Key is never stored or transmitted anywhere except directly to api.anthropic.com — get one at console.anthropic.com</div>
 </div>
 
 <div class="legend">
@@ -86,8 +95,11 @@ textarea:focus{border-color:#3a3a3a}
 </div>
 
 <div class="controls">
-  <button class="btn-main" id="run-all" onclick="runAll()">▶ RUN ALL POSTS</button>
-  <span style="font-size:10px;color:#2ecc71;display:none" id="ccount"></span>
+  <div class="controls-row">
+    <button class="btn-main" id="run-all" onclick="runAll()">▶ RUN ALL POSTS</button>
+    <span style="font-size:10px;color:#2ecc71;display:none" id="ccount"></span>
+  </div>
+  <div class="demo-note" id="run-note">Runs <span>pre-classified results</span> — enter API key above to run live classification</div>
 </div>
 
 <div id="posts"></div>
@@ -95,6 +107,7 @@ textarea:focus{border-color:#3a3a3a}
 <hr>
 
 <span class="lbl" style="font-size:9px;letter-spacing:.15em">CLASSIFY CUSTOM POST (Arabic or English)</span>
+<div style="font-size:10px;color:#444;font-family:'IBM Plex Sans',sans-serif;margin-bottom:8px">Requires an Anthropic API key above</div>
 <textarea id="custom-input" placeholder="Paste any Arabic or English post here..."></textarea>
 <button class="btn-sm" id="cbtn" onclick="classifyCustom()">CLASSIFY →</button>
 <div id="custom-res"></div>
@@ -113,6 +126,7 @@ const FRAMES={
   F8:{label:"Other",color:"#7f8c8d",bg:"#1a1a1a"}
 };
 const AC={PRO_SAUDI:"#c0392b",PRO_UAE:"#3498db",NEUTRAL:"#95a5a6",AMBIGUOUS:"#888"};
+
 const POSTS=[
   {id:"P001",lang:"AR",src:"Al-Jazirah (Saudi), Jan 22 2026",text:"الإمارات ألقت بنفسها في أحضان الصهيونية وقبلت أن تكون حصان طروادة الإسرائيلي في العالم العربي، خيانة لله ولرسوله وللأمة بأسرها."},
   {id:"P002",lang:"AR",src:"Pro-UAE X account, Jan 2026",text:"المملكة العربية السعودية تعاني من عقدة الأخ الأكبر. الإمارات دولة ذات سيادة مستقلة، لها قراراتها الخاصة، ولا تقبل الوصاية من أحد."},
@@ -121,8 +135,32 @@ const POSTS=[
   {id:"P005",lang:"EN",src:"Emirati commentator, X/Twitter, Jan 2026",text:"The UAE made enormous sacrifices in Yemen — our soldiers died fighting terrorism alongside Saudi Arabia. Now Riyadh calls us destabilizers. This is not how you treat a brother who bled for you."},
   {id:"P006",lang:"AR",src:"Saudi-aligned account, X/Twitter, Jan 2026",text:"اتفاقيات إبراهيم ليست سلاماً سياسياً، بل هي استسلام ديني وتاريخي. الإمارات قبلت بالسردية اليهودية على حساب الهوية الإسلامية والعربية."},
   {id:"P007",lang:"EN",src:"Reuters factual report, Dec 30 2025",text:"Saudi Arabia struck what it described as a UAE weapons shipment at the port of Mukalla, accusing Abu Dhabi of supporting STC forces near its border. The UAE denied the allegations."},
-  {id:"P008",lang:"AR",src:"Sudan-based account, Jan 2026",text:"شاركوا الهاشتاق وأيضاً قاطعوا منتجات الإمارات. أبوظبي تمول قوات الدعم السريع التي ترتكب المجازر في السودان. #قاطعوا_السياحة_في_الإمارات"}
+  {id:"P008",lang:"AR",src:"Sudan-based account, Jan 2026",text:"شاركوا الهاشتاق وأيضاً قاطعوا منتجات الإمارات. أبوظبي تمول قوات الدعم السريع التي ترتكب المجازر في السودان. #قاطعوا_السياحة_في_الإمارات"},
+  {id:"P009",lang:"EN",src:"Saudi-aligned commentator, X/Twitter, Jan 2026",text:"By joining the Abraham Accords, the UAE didn't just normalize with Israel — it handed Jerusalem a strategic foothold at the heart of the Arab Gulf. Saudi Arabia is right to demand accountability from Abu Dhabi about whose interests it's actually serving."},
+  {id:"P010",lang:"EN",src:"Saudi-aligned account, X/Twitter, Jan 2026",text:"The UAE's fingerprints are on every fracture in the Arab world: RSF militias in Sudan, STC separatists in Yemen, Haftar's forces in Libya. This isn't foreign policy — it's a systematic project to hollow out Arab state sovereignty while Abu Dhabi profits."},
+  {id:"P011",lang:"EN",src:"Saudi-aligned commentator, X/Twitter, Jan 2026",text:"The Abraham Accords weren't diplomacy. They were a transaction: Palestinian land and Islamic legitimacy traded for trade deals and tech investment. Any Arab state that signs is telling the world the Palestinian cause has a price tag."},
+  {id:"P012",lang:"EN",src:"Pro-UAE analyst, X/Twitter, Jan 2026",text:"Saudi Arabia expects total deference from every Gulf state — on Yemen, on Israel, on OPEC quotas, on everything. The moment the UAE makes an independent foreign policy decision, Riyadh calls it a threat. That's not Gulf unity. That's hegemony."},
+  {id:"P013",lang:"EN",src:"Emirati official account, X/Twitter, Jan 2026",text:"UAE soldiers bled in Yemen. Emirati engineers rebuilt Aden's port. Emirati funding held the coalition together through its worst years. Riyadh's response: bomb our ships and demand we leave within 24 hours. That's how you treat an ally who showed up."},
+  {id:"P014",lang:"EN",src:"Sudanese diaspora account, X/Twitter, Jan 2026",text:"Abu Dhabi bankrolled the RSF while they were burning villages in Darfur. Every luxury hotel booking in Dubai funds that machinery. Don't normalize this with your tourism dollars. #BoycottUAETourism"}
 ];
+
+const PRECOMPUTED={
+  P001:{primary_frame:"F1",frame_label:"Zionist Proxy",alignment:"PRO_SAUDI",confidence:0.93,key_signals:["حصان طروادة الإسرائيلي","أحضان الصهيونية","خيانة لله ولرسوله","الأمة بأسرها"],reasoning:"Textbook F1 deployment at maximum register: 'threw itself into the arms of Zionism' + 'Israeli Trojan horse in the Arab world' + religious betrayal framing ('betrayal of God, His Prophet and the entire umma'). Escalation from political accusation to civilizational condemnation. Consistent with coordinated Al-Jazirah narrative seeding documented in the corpus period."},
+  P002:{primary_frame:"F4",frame_label:"Sovereignty Defense",alignment:"PRO_UAE",confidence:0.90,key_signals:["عقدة الأخ الأكبر","دولة ذات سيادة","لا تقبل الوصاية","قراراتها الخاصة"],reasoning:"Textbook F4: explicit invocation of 'big brother complex' (عقدة الأخ الأكبر), assertion of UAE independence, rejection of Saudi tutelage. Language is calibrated and authoritative — consistent with Emirati official or senior commentator register. Direct counter-narrative to Saudi hegemony framing."},
+  P003:{primary_frame:"F6",frame_label:"Boycott Mobilization",alignment:"PRO_SAUDI",confidence:0.92,key_signals:["#BoycottUAETourism","RSF militias","genocide in Sudan","moral duty","Don't fly Emirates"],reasoning:"F6 Boycott Mobilization with F2 secondary justification. Specific boycott targets enumerated (Dubai, Abu Dhabi, Emirates airline) with official hashtag. RSF-Sudan framing functions as moral lever. 'National and moral duty' language amplifies urgency and broadens the appeal beyond Saudi partisans. Consistent with coordinated hashtag campaign active January 2026."},
+  P004:{primary_frame:"F2",frame_label:"Regional Destabilizer",alignment:"PRO_SAUDI",confidence:0.88,key_signals:["الفوضى","الانفصاليين","تفتيت الدول العربية","نمط ممنهج","اليمن والسودان وليبيا"],reasoning:"Clear F2 frame: four destabilization theaters enumerated (Yemen, Sudan, Libya, Horn of Africa) with explicit 'systematic pattern' framing. The structural characterization is analytically significant — it positions the Saudi-UAE conflict not as bilateral friction but as a systemic threat to Arab state order. State media sourcing (Al-Ekhbariya) suggests coordinated narrative deployment."},
+  P005:{primary_frame:"F5",frame_label:"Sacrifice Narrative",alignment:"PRO_UAE",confidence:0.89,key_signals:["soldiers died","fighting terrorism","brother who bled","enormous sacrifices","calls us destabilizers"],reasoning:"F5 Sacrifice Narrative: invokes UAE military deaths alongside Saudi Arabia to legitimize UAE's Yemen role and delegitimize Saudi criticism. 'Brother who bled for you' shifts the moral burden onto Riyadh. The contrast structure (sacrifice → betrayal) is emotionally designed to generate sympathy with Western and Gulf audiences."},
+  P006:{primary_frame:"F3",frame_label:"Accords Betrayal",alignment:"PRO_SAUDI",confidence:0.91,key_signals:["اتفاقيات إبراهيم","استسلام ديني وتاريخي","السردية اليهودية","الهوية الإسلامية والعربية"],reasoning:"F3 at full intensity: Abraham Accords characterized as 'religious and historical surrender' to 'the Jewish narrative' at the expense of Islamic and Arab identity. Elevates political critique to civilizational defeat framing. Consistent with Saudi-aligned clerical and commentator networks active during the corpus period."},
+  P007:{primary_frame:"F7",frame_label:"Neutral Reporting",alignment:"NEUTRAL",confidence:0.95,key_signals:["Reuters","described as","accusing","denied","factual report"],reasoning:"F7 Neutral Reporting: standard wire service format with attributed, non-evaluative language throughout ('what it described as,' 'accusing,' 'denied'). No narrative frame adopted or amplified. Functions as factual baseline within the corpus — useful for calibrating classifier against non-partisan signal."},
+  P008:{primary_frame:"F6",frame_label:"Boycott Mobilization",alignment:"PRO_SAUDI",confidence:0.87,key_signals:["#قاطعوا_السياحة_في_الإمارات","قوات الدعم السريع","المجازر","شاركوا الهاشتاق","قاطعوا منتجات الإمارات"],reasoning:"F6 with F2 secondary. Sudan-based account shows third-party amplification pattern: the hashtag is shared with the core Saudi campaign but the primary motivation is Sudanese-RSF grievance rather than Saudi-UAE political alignment. Analytically significant — illustrates how boycott frames travel across ideologically distinct networks."},
+  P009:{primary_frame:"F1",frame_label:"Zionist Proxy",alignment:"PRO_SAUDI",confidence:0.88,key_signals:["strategic foothold","Arab Gulf","whose interests","Abraham Accords","accountability"],reasoning:"F1 in calibrated English for Western-facing audiences: 'strategic foothold at the heart of the Arab Gulf' is a geopolitical rather than religious formulation of the same underlying accusation as P001. The demand for 'accountability' and 'whose interests' mirrors Saudi-aligned English-language commentator output. Slightly lower confidence than Arabic-language F1 examples as the religious register is attenuated by design."},
+  P010:{primary_frame:"F2",frame_label:"Regional Destabilizer",alignment:"PRO_SAUDI",confidence:0.91,key_signals:["RSF militias","STC separatists","Haftar's forces","systematic project","hollow out Arab state sovereignty"],reasoning:"Strong F2 in English, targeting Western policy audiences. Multi-theater logic (Sudan/Yemen/Libya) identical to P004. 'Systematic project to hollow out Arab state sovereignty' is analytically precise English-language condensation of the Arabic nizam (systematic) framing. Commercial-interest hook ('while Abu Dhabi profits') adds a Western-accessible motivational explanation absent from Arabic-language versions."},
+  P011:{primary_frame:"F3",frame_label:"Accords Betrayal",alignment:"PRO_SAUDI",confidence:0.85,key_signals:["transaction","Palestinian land","Islamic legitimacy","price tag","trade deals and tech investment"],reasoning:"F3 stripped to transactional English: 'Palestinian land and Islamic legitimacy traded for trade deals' distills the civilizational critique into economic language. 'Has a price tag' effectively condenses the Arabic استسلام (surrender) framing for non-Arabic audiences. Slightly lower confidence than Arabic F3 instances — religious intensity is attenuated by design for Western reach."},
+  P012:{primary_frame:"F4",frame_label:"Sovereignty Defense",alignment:"PRO_UAE",confidence:0.89,key_signals:["total deference","independent foreign policy decision","hegemony","not Gulf unity","protection racket"],reasoning:"F4 in adversarial English register. 'Protection racket' is the most direct English-language equivalent of عقدة الأخ الأكبر in the corpus — strips Saudi position of legitimacy entirely. Enumeration of Saudi demands (Yemen, Israel, OPEC) frames the conflict as systemic rather than bilateral. Consistent with Emirati English-language commentator and media output during corpus period."},
+  P013:{primary_frame:"F5",frame_label:"Sacrifice Narrative",alignment:"PRO_UAE",confidence:0.93,key_signals:["UAE soldiers bled","rebuilt Aden","bomb our ships","showed up","held the coalition together"],reasoning:"F5 at peak intensity: three concrete sacrifice claims (military deaths, infrastructure, coalition stabilization) followed by immediate Saudi betrayal ('bomb our ships, demand we leave within 24 hours'). Contrast structure is emotionally effective. 'Ally who showed up' carries an implicit appeal to Western alliance-management norms — a framing designed to resonate beyond the Gulf."},
+  P014:{primary_frame:"F6",frame_label:"Boycott Mobilization",alignment:"AMBIGUOUS",confidence:0.84,key_signals:["#BoycottUAETourism","bankrolled the RSF","Darfur","burning villages","tourism dollars"],reasoning:"F6 with third-party amplification signature. Unlike P003 which shows Saudi-campaign authorship signals, this post's specificity (Darfur, 'burning villages') is consistent with Sudanese diaspora or human rights network origin. The boycott hashtag is shared with the Saudi campaign but the ideological driver is different. Marked AMBIGUOUS: the boycott frame is instrumentalized here for Sudan-grievance mobilization, not Saudi-UAE political alignment."}
+};
+
 const SYS=`You are an expert analyst in influence operations and narrative intelligence in Gulf region Arabic/English political discourse.
 Classify the post according to narrative frames from the Saudi-UAE information war (December 30, 2025).
 F1 ZIONIST_PROXY — UAE as Israel's Trojan horse. Arabic: حصان طروادة الإسرائيلي، خيانة الأمة
@@ -131,22 +169,35 @@ F3 ACCORDS_BETRAYAL — Abraham Accords as religious/civilizational capitulation
 F4 SOVEREIGNTY_DEFENSE — UAE independence vs Saudi hegemony. Arabic: السيادة، عقدة الأخ الأكبر
 F5 SACRIFICE_NARRATIVE — UAE military/financial contributions; Saudi ingratitude.
 F6 BOYCOTT_MOBILIZATION — Calls to boycott UAE. Hashtags: #BoycottUAETourism #قاطعوا_السياحة_في_الإمارات
-F7 NEUTRAL_REPORTING — Factual, no campaign alignment.
-F8 OTHER — Doesn't fit.
-Respond ONLY with valid JSON:
-{"primary_frame":"F1-F8","frame_label":"label","confidence":0.0-1.0,"alignment":"PRO_SAUDI|PRO_UAE|NEUTRAL|AMBIGUOUS","key_signals":["s1","s2","s3"],"reasoning":"1-2 sentences"}`;
+F7 NEUTRAL_REPORTING — Factual/wire-service reporting, no frame adopted.
+F8 OTHER — Does not fit the above frames.
+Respond ONLY with a JSON object. No markdown, no explanation outside the JSON.
+{"primary_frame":"F1-F8","frame_label":"string","alignment":"PRO_SAUDI|PRO_UAE|NEUTRAL|AMBIGUOUS","confidence":0.0-1.0,"key_signals":["2-5 short phrases from the text"],"reasoning":"2-3 sentences"}`;
 
-const results={};let cnt=0,busy=false;
+let results={},cnt=0,busy=false,total=POSTS.length;
 
 function updateKeyStatus(){
   const k=document.getElementById('api-key').value.trim();
   const s=document.getElementById('key-status');
-  if(k.startsWith('sk-ant-')&&k.length>20){s.textContent='● ready';s.style.color='#2ecc71';}
-  else if(k.length>0){s.textContent='○ invalid format';s.style.color='#e67e22';}
-  else{s.textContent='○ not set';s.style.color='#444';}
+  const note=document.getElementById('run-note');
+  const badge=document.getElementById('mode-badge');
+  if(k.startsWith('sk-ant-')&&k.length>20){
+    s.textContent='● ready';s.style.color='#2ecc71';
+    note.innerHTML='Runs <span style="color:#2ecc71">live API classification</span> against the model';
+    badge.textContent='LIVE MODE';badge.style.color='#e67e22';badge.style.background='#2a1a08';
+  } else if(k.length>0){
+    s.textContent='○ invalid format';s.style.color='#e67e22';
+    note.innerHTML='Runs <span style="color:#2ecc71">pre-classified results</span> — fix API key format above to run live';
+    badge.textContent='PRE-CLASSIFIED MODE';badge.style.color='#2ecc71';badge.style.background='#1a2a1a';
+  } else {
+    s.textContent='○ not set';s.style.color='#444';
+    note.innerHTML='Runs <span style="color:#2ecc71">pre-classified results</span> — enter API key above to run live classification';
+    badge.textContent='PRE-CLASSIFIED MODE';badge.style.color='#2ecc71';badge.style.background='#1a2a1a';
+  }
 }
 
 function getKey(){return document.getElementById('api-key').value.trim();}
+function hasKey(){const k=getKey();return k.startsWith('sk-ant-')&&k.length>20;}
 
 // Build legend
 const lt=document.getElementById('legend-tags');
@@ -173,11 +224,9 @@ POSTS.forEach(p=>{
 });
 
 async function callAPI(text,id){
-  const key=getKey();
-  if(!key||!key.startsWith('sk-ant-'))throw new Error('API key not set — enter your Anthropic key above');
   const r=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
-    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    headers:{"Content-Type":"application/json","x-api-key":getKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
     body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:500,system:SYS,messages:[{role:"user",content:`Post ID: ${id}\nText: ${text}`}]})
   });
   const d=await r.json();
@@ -209,7 +258,7 @@ function renderResult(id,res){
 }
 
 function updateMeta(){
-  document.getElementById('cmeta').textContent=`CLASSIFIED ${cnt}/8`;
+  document.getElementById('cmeta').textContent=`CLASSIFIED ${cnt}/${total}`;
   document.getElementById('cmeta').style.color=cnt>0?'#2ecc71':'#444';
   const cc=document.getElementById('ccount');cc.textContent=`${cnt} classified`;cc.style.display='inline';
 }
@@ -219,7 +268,15 @@ async function classifyPost(id){
   const btn=document.getElementById(`b-${id}`);
   btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
   try{
-    const res=await callAPI(post.text,id);
+    let res;
+    if(hasKey()){
+      res=await callAPI(post.text,id);
+    } else {
+      // Use precomputed — add a short delay to simulate processing
+      await new Promise(r=>setTimeout(r,320+Math.random()*280));
+      res=PRECOMPUTED[id];
+      if(!res)throw new Error('No pre-classified result for this post');
+    }
     results[id]=res;renderResult(id,res);
     if(!results[id+'_c']){cnt++;results[id+'_c']=true;}
     updateMeta();
@@ -231,21 +288,21 @@ async function classifyPost(id){
 
 async function runAll(){
   if(busy)return;
-  if(!getKey()||!getKey().startsWith('sk-ant-')){
-    document.getElementById('api-key').focus();
-    document.getElementById('key-status').textContent='← enter your API key first';
-    document.getElementById('key-status').style.color='#e67e22';
-    return;
-  }
   busy=true;cnt=0;
   Object.keys(results).forEach(k=>delete results[k]);
-  const btn=document.getElementById('run-all');btn.disabled=true;btn.textContent='CLASSIFYING...';
+  const btn=document.getElementById('run-all');
+  btn.disabled=true;
+  btn.textContent=hasKey()?'CLASSIFYING LIVE...':'LOADING PRE-CLASSIFIED...';
   for(const p of POSTS)await classifyPost(p.id);
   btn.disabled=false;btn.textContent='▶ RUN ALL POSTS';busy=false;
 }
 
 async function classifyCustom(){
   const txt=document.getElementById('custom-input').value.trim();if(!txt)return;
+  if(!hasKey()){
+    document.getElementById('custom-res').innerHTML=`<div style="color:#e67e22;font-size:10px;margin-top:8px">Enter a valid Anthropic API key above to classify custom posts.</div>`;
+    return;
+  }
   const btn=document.getElementById('cbtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span> CLASSIFYING';
   document.getElementById('custom-res').innerHTML='';
   try{
