@@ -1,6 +1,6 @@
 # Narrative Frame Classifier
-### Saudi-UAE Information Operation — Appendix A
-**Vinesight Home Assignment | Johanna Mamane | May 2026**
+### Saudi-UAE Information Operation 
+Johanna Mamane | May 2026**
 
 ---
 
