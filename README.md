@@ -6,7 +6,7 @@ Johanna Mamane | May 2026**
 
 Live demo of an LLM-based narrative frame classifier applied to the Saudi-UAE information war that erupted on December 30, 2025.
 
-**[→ Open the classifier](https://jomamane.github.io/vinesight-classifier)**
+**[→ Open the classifier](https://jomamane.github.io/Narrative-Frame-Classifier-/)**
 
 ---
 
@@ -31,7 +31,7 @@ Classifies Arabic and English social media posts by narrative frame using semant
 
 ## Usage
 
-1. Open the [live demo](https://jomamane.github.io/vinesight-classifier)
+1. Open the [live demo](https://jomamane.github.io/Narrative-Frame-Classifier-/)
 2. Enter your Anthropic API key (get one at [console.anthropic.com](https://console.anthropic.com))
 3. Click **RUN ALL POSTS** or classify individual posts
 4. Use the custom input to classify any Arabic or English post
@@ -40,11 +40,11 @@ Your API key is never stored — it lives in memory only and is sent directly to
 
 ## Corpus
 
-8 posts derived from documented rhetoric in open sources (see report footnotes). Arabic posts are representative reconstructions based on documented statements; English posts are paraphrases of documented content.
+8 posts derived from documented rhetoric in open sources. 
 
 ## Context
 
-This tool is Appendix A of a narrative intelligence report analyzing the influence campaign that followed Saudi Arabia's December 30, 2025 airstrikes on a UAE-linked weapons shipment at the port of Mukalla, Yemen. Full methodology and sourcing in the main report.
+This tool is a narrative intelligence report analyzing the influence campaign that followed Saudi Arabia's December 30, 2025 airstrikes on a UAE-linked weapons shipment at the port of Mukalla, Yemen.
 
 ---
 
